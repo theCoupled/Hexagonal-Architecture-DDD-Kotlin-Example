@@ -13,7 +13,7 @@ import com.thecoupled.movierecommenderapp.domain.genre.Genre
 import com.thecoupled.movierecommenderapp.domain.genre.GenresQuery
 import com.thecoupled.movierecommenderapp.domain.genre.GenresRepository
 import com.thecoupled.movierecommenderapp.domain.movie.MovieAlreadyExistingException
-import com.thecoupled.movierecommenderapp.domain.movie.MovieQuery
+import com.thecoupled.movierecommenderapp.domain.movie.MoviesQuery
 import com.thecoupled.movierecommenderapp.domain.movie.MoviesRepository
 import com.thecoupled.movierecommenderapp.domain.movie.createNewMovie
 import com.thecoupled.movierecommenderapp.domain.theme.Theme
@@ -44,8 +44,7 @@ class CreateMovieHandler(
     }
 
     private fun CreateMovieCommand.assertMovieNotExisting() {
-        val movies = moviesRepository.query(MovieQuery(names = setOf(this.name)))
-        if (movies.isNotEmpty()) {
+        if (moviesRepository.query(MoviesQuery(names = setOf(this.name))).isNotEmpty()) {
             throw MovieAlreadyExistingException()
         }
     }

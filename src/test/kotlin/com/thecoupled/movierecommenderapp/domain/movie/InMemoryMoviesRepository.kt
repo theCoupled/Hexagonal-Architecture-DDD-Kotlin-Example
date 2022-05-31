@@ -8,7 +8,7 @@ class InMemoryMoviesRepository(
     private val nextIds: MutableList<MovieId> = mutableListOf()
 ) : InMemoryRepository<Movie, MovieId>(existingMovies, nextIds), MoviesRepository {
 
-    override fun query(query: MovieQuery): List<Movie> {
+    override fun query(query: MoviesQuery): List<Movie> {
         val returnList: MutableList<Movie> = mutableListOf()
 
         if (query.names != null) {
