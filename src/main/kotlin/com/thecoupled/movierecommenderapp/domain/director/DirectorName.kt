@@ -5,7 +5,7 @@ package com.thecoupled.movierecommenderapp.domain.director
 value class DirectorName private constructor(val value: String) {
     init {
         if (value.isBlank()) {
-            throw DirectorNameCannotBeEmptyException()
+            throw DirectorNameEmptyException()
         }
     }
 

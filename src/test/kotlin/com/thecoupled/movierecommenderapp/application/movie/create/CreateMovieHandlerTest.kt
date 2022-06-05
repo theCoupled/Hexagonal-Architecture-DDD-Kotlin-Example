@@ -2,25 +2,25 @@ package com.thecoupled.movierecommenderapp.application.movie.create
 
 import com.thecoupled.movierecommenderapp.domain.actor.ActorId
 import com.thecoupled.movierecommenderapp.domain.actor.ActorName
-import com.thecoupled.movierecommenderapp.domain.actor.ActorNameCannotBeEmptyException
+import com.thecoupled.movierecommenderapp.domain.actor.ActorNameEmptyException
 import com.thecoupled.movierecommenderapp.domain.actor.ActorsRepository
 import com.thecoupled.movierecommenderapp.domain.actor.arbitraryActor
 import com.thecoupled.movierecommenderapp.domain.actor.createActorsRepository
 import com.thecoupled.movierecommenderapp.domain.country.CountriesRepository
 import com.thecoupled.movierecommenderapp.domain.country.CountryId
 import com.thecoupled.movierecommenderapp.domain.country.CountryName
-import com.thecoupled.movierecommenderapp.domain.country.CountryNameCannotBeEmptyException
+import com.thecoupled.movierecommenderapp.domain.country.CountryNameEmptyException
 import com.thecoupled.movierecommenderapp.domain.country.arbitraryCountry
 import com.thecoupled.movierecommenderapp.domain.country.createCountriesRepository
 import com.thecoupled.movierecommenderapp.domain.director.DirectorId
 import com.thecoupled.movierecommenderapp.domain.director.DirectorName
-import com.thecoupled.movierecommenderapp.domain.director.DirectorNameCannotBeEmptyException
+import com.thecoupled.movierecommenderapp.domain.director.DirectorNameEmptyException
 import com.thecoupled.movierecommenderapp.domain.director.DirectorsRepository
 import com.thecoupled.movierecommenderapp.domain.director.arbitraryDirector
 import com.thecoupled.movierecommenderapp.domain.director.createDirectorsRepository
 import com.thecoupled.movierecommenderapp.domain.genre.GenreId
 import com.thecoupled.movierecommenderapp.domain.genre.GenreName
-import com.thecoupled.movierecommenderapp.domain.genre.GenreNameCannotBeEmptyException
+import com.thecoupled.movierecommenderapp.domain.genre.GenreNameEmptyException
 import com.thecoupled.movierecommenderapp.domain.genre.GenresRepository
 import com.thecoupled.movierecommenderapp.domain.genre.arbitraryGenre
 import com.thecoupled.movierecommenderapp.domain.genre.createGenresRepository
@@ -29,7 +29,7 @@ import com.thecoupled.movierecommenderapp.domain.movie.MissingGenreException
 import com.thecoupled.movierecommenderapp.domain.movie.MissingThemeException
 import com.thecoupled.movierecommenderapp.domain.movie.MovieAlreadyExistingException
 import com.thecoupled.movierecommenderapp.domain.movie.MovieName
-import com.thecoupled.movierecommenderapp.domain.movie.MovieNameCannotBeEmptyException
+import com.thecoupled.movierecommenderapp.domain.movie.MovieNameEmptyException
 import com.thecoupled.movierecommenderapp.domain.movie.MoviesRepository
 import com.thecoupled.movierecommenderapp.domain.movie.arbitraryEnrichedMovie
 import com.thecoupled.movierecommenderapp.domain.movie.createMoviesRepository
@@ -41,6 +41,9 @@ import com.thecoupled.movierecommenderapp.domain.theme.createThemesRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
 import java.util.*
 
 class CreateMovieHandlerTest {
@@ -51,7 +54,8 @@ class CreateMovieHandlerTest {
         actorsRepository: ActorsRepository = createActorsRepository(),
         themesRepository: ThemesRepository = createThemesRepository(),
         genresRepository: GenresRepository = createGenresRepository(),
-        directorsRepository: DirectorsRepository = createDirectorsRepository()
+        directorsRepository: DirectorsRepository = createDirectorsRepository(),
+        clock: Clock = Clock.fixed(Instant.now(), ZoneId.of("UTC"))
     ): CreateMovieHandler =
         CreateMovieHandler(
             moviesRepository = moviesRepository,
@@ -59,14 +63,15 @@ class CreateMovieHandlerTest {
             actorsRepository = actorsRepository,
             themesRepository = themesRepository,
             genresRepository = genresRepository,
-            directorsRepository = directorsRepository
+            directorsRepository = directorsRepository,
+            clock = clock
         )
 
     @Test
     fun `should throw exception when movie name is blank`() {
         val useCase = createUseCase()
 
-        assertThrows<MovieNameCannotBeEmptyException> {
+        assertThrows<MovieNameEmptyException> {
             useCase.execute(
                 createCommand(
                     name = MovieName("")
@@ -79,7 +84,7 @@ class CreateMovieHandlerTest {
     fun `should throw exception when movie genre names are blank`() {
         val useCase = createUseCase()
 
-        assertThrows<GenreNameCannotBeEmptyException> {
+        assertThrows<GenreNameEmptyException> {
             useCase.execute(
                 createCommand(
                     genreNames = setOf(GenreName(""))
@@ -105,7 +110,7 @@ class CreateMovieHandlerTest {
     fun `should throw exception when movie actor names are blank`() {
         val useCase = createUseCase()
 
-        assertThrows<ActorNameCannotBeEmptyException> {
+        assertThrows<ActorNameEmptyException> {
             useCase.execute(
                 createCommand(
                     actorNames = setOf(ActorName(""))
@@ -118,7 +123,7 @@ class CreateMovieHandlerTest {
     fun `should throw exception when movie director names are blank`() {
         val useCase = createUseCase()
 
-        assertThrows<DirectorNameCannotBeEmptyException> {
+        assertThrows<DirectorNameEmptyException> {
             useCase.execute(
                 createCommand(
                     directorNames = setOf(DirectorName(""))
@@ -144,7 +149,7 @@ class CreateMovieHandlerTest {
     fun `should throw exception when movie theme names are blank`() {
         val useCase = createUseCase()
 
-        assertThrows<DirectorNameCannotBeEmptyException> {
+        assertThrows<DirectorNameEmptyException> {
             useCase.execute(
                 createCommand(
                     directorNames = setOf(DirectorName(""))
@@ -170,7 +175,7 @@ class CreateMovieHandlerTest {
     fun `should throw exception when movie country name is blank`() {
         val useCase = createUseCase()
 
-        assertThrows<CountryNameCannotBeEmptyException> {
+        assertThrows<CountryNameEmptyException> {
             useCase.execute(
                 createCommand(
                     countryName = CountryName("")

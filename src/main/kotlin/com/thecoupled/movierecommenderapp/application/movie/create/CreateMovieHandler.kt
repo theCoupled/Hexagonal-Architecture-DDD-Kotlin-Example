@@ -21,6 +21,7 @@ import com.thecoupled.movierecommenderapp.domain.shared.DomainEvent
 import com.thecoupled.movierecommenderapp.domain.theme.Theme
 import com.thecoupled.movierecommenderapp.domain.theme.ThemesQuery
 import com.thecoupled.movierecommenderapp.domain.theme.ThemesRepository
+import java.time.Clock
 
 class CreateMovieHandler(
     private val moviesRepository: MoviesRepository,
@@ -28,7 +29,8 @@ class CreateMovieHandler(
     private val actorsRepository: ActorsRepository,
     private val themesRepository: ThemesRepository,
     private val genresRepository: GenresRepository,
-    private val directorsRepository: DirectorsRepository
+    private val directorsRepository: DirectorsRepository,
+    private val clock: Clock
 ) {
     fun execute(command: CreateMovieCommand): Pair<Movie, List<DomainEvent>> {
         command.assertMovieNotExisting()
@@ -39,7 +41,7 @@ class CreateMovieHandler(
     }
 
     private fun CreateMovieCommand.assertMovieNotExisting() {
-        if (moviesRepository.query(MoviesQuery(names = setOf(this.name))).isNotEmpty()) {
+        if (moviesRepository.query(MoviesQuery(andNames = setOf(this.name))).isNotEmpty()) {
             throw MovieAlreadyExistingException()
         }
     }
@@ -52,7 +54,8 @@ class CreateMovieHandler(
             themes = this.getOrCreateThemes(),
             actors = this.getOrCreateActors(),
             genres = this.getOrCreateGenres(),
-            directors = this.getOrCreateDirectors()
+            directors = this.getOrCreateDirectors(),
+            clock = clock
         )
 
     private fun CreateMovieCommand.getOrCreateCountry(): Country {

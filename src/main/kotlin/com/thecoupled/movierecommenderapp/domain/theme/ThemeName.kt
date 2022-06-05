@@ -4,7 +4,7 @@ package com.thecoupled.movierecommenderapp.domain.theme
 value class ThemeName private constructor(val value: String) {
     init {
         if (value.isBlank()) {
-            throw ThemeNameCannotBeEmptyException()
+            throw ThemeNameEmptyException()
         }
     }
 

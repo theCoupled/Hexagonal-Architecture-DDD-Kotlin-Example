@@ -4,7 +4,7 @@ package com.thecoupled.movierecommenderapp.domain.movie
 value class MovieName private constructor(val value: String) {
     init {
         if (value.isBlank()) {
-            throw MovieNameCannotBeEmptyException()
+            throw MovieNameEmptyException()
         }
     }
 

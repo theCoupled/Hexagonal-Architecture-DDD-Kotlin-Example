@@ -5,6 +5,7 @@ import com.thecoupled.movierecommenderapp.domain.country.CountryId
 import com.thecoupled.movierecommenderapp.domain.director.DirectorId
 import com.thecoupled.movierecommenderapp.domain.genre.GenreId
 import com.thecoupled.movierecommenderapp.domain.theme.ThemeId
+import java.time.Instant
 import java.util.*
 
 fun arbitraryEnrichedMovie(
@@ -14,7 +15,8 @@ fun arbitraryEnrichedMovie(
     actorIds: Set<ActorId> = setOf(ActorId(UUID.randomUUID())),
     directorsIds: Set<DirectorId> = setOf(DirectorId(UUID.randomUUID())),
     themeIds: Set<ThemeId> = setOf(ThemeId(UUID.randomUUID())),
-    countryId: CountryId = CountryId(UUID.randomUUID())
+    countryId: CountryId = CountryId(UUID.randomUUID()),
+    createdAt: Instant = Instant.now()
 ): Movie =
     Movie(
         id = id,
@@ -23,7 +25,8 @@ fun arbitraryEnrichedMovie(
         actorIds = actorIds,
         directorIds = directorsIds,
         themeIds = themeIds,
-        countryId = countryId
+        countryId = countryId,
+        createdAt = createdAt
     )
 
 fun arbitraryEmptyMovie(
@@ -33,7 +36,8 @@ fun arbitraryEmptyMovie(
     actorIds: Set<ActorId>,
     directorsIds: Set<DirectorId>,
     themeIds: Set<ThemeId>,
-    countryId: CountryId = CountryId(UUID.randomUUID())
+    countryId: CountryId = CountryId(UUID.randomUUID()),
+    createdAt: Instant = Instant.now()
 ): Movie =
     Movie(
         id = id,
@@ -42,5 +46,6 @@ fun arbitraryEmptyMovie(
         actorIds = actorIds,
         directorIds = directorsIds,
         themeIds = themeIds,
-        countryId = countryId
+        countryId = countryId,
+        createdAt = createdAt
     )

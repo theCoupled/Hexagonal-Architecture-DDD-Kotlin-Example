@@ -5,7 +5,7 @@ package com.thecoupled.movierecommenderapp.domain.country
 value class CountryName private constructor(val value: String) {
     init {
         if (value.isBlank()) {
-            throw CountryNameCannotBeEmptyException()
+            throw CountryNameEmptyException()
         }
     }
 

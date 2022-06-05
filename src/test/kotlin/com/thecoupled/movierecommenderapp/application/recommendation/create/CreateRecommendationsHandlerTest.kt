@@ -5,6 +5,8 @@ import com.thecoupled.movierecommenderapp.domain.like.createLikesRepository
 import com.thecoupled.movierecommenderapp.domain.movie.MoviesRepository
 import com.thecoupled.movierecommenderapp.domain.movie.createMoviesRepository
 import com.thecoupled.movierecommenderapp.domain.recommendation.Recommendation
+import com.thecoupled.movierecommenderapp.domain.recommendation.RecommendationsRepository
+import com.thecoupled.movierecommenderapp.domain.recommendation.createRecommendationsRepository
 import com.thecoupled.movierecommenderapp.domain.shared.DomainEvent
 import com.thecoupled.movierecommenderapp.domain.shared.UserCaseSetup
 import com.thecoupled.movierecommenderapp.domain.shared.userCaseSetup
@@ -69,7 +71,7 @@ class CreateRecommendationsHandlerTest {
     }
 
     @Test
-    fun `should recommend movies without affinity when movies with affinity not found`() {
+    fun `should not recommend any movies when movies with affinity not found`() {
         val userCaseSetup = userCaseSetup {
             likedMovies {
                 movie {
@@ -91,9 +93,7 @@ class CreateRecommendationsHandlerTest {
                     themes { theme("arbitrary theme 2") }
                 }
             }
-            expectedMovieRecommendations {
-                recommendation("arbitrary movie name 2", 0.0)
-            }
+            expectedMovieRecommendations { }
         }
 
         val (result, _) = executeWithUserCaseSetup(userCaseSetup)
@@ -102,7 +102,7 @@ class CreateRecommendationsHandlerTest {
     }
 
     @Test
-    fun `should first recommend movies with affinity and after movies without affinity after when recommended movies is less than 5`() {
+    fun `should only return movies with at least one affinity when existing movies without any affinity`() {
         val userCaseSetup = userCaseSetup {
             likedMovies {
                 movie {
@@ -134,7 +134,6 @@ class CreateRecommendationsHandlerTest {
             }
             expectedMovieRecommendations {
                 recommendation("movie 2", 0.0)
-                recommendation("movie 3", 0.0)
             }
         }
 
@@ -174,11 +173,13 @@ class CreateRecommendationsHandlerTest {
     private fun createUseCase(
         usersRepository: UsersRepository = createUsersRepository(),
         moviesRepository: MoviesRepository = createMoviesRepository(),
-        likesRepository: LikesRepository = createLikesRepository()
+        likesRepository: LikesRepository = createLikesRepository(),
+        recommendationsRepository: RecommendationsRepository = createRecommendationsRepository()
     ): CreateRecommendationsHandler =
         CreateRecommendationsHandler(
             usersRepository = usersRepository,
             moviesRepository = moviesRepository,
-            likesRepository = likesRepository
+            likesRepository = likesRepository,
+            recommendationsRepository = recommendationsRepository
         )
 }

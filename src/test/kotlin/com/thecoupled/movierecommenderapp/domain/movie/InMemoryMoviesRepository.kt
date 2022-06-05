@@ -9,13 +9,33 @@ class InMemoryMoviesRepository(
 ) : InMemoryRepository<Movie, MovieId>(existingMovies, nextIds), MoviesRepository {
 
     override fun query(query: MoviesQuery): List<Movie> {
-        val returnList: MutableList<Movie> = mutableListOf()
+        var returnList: List<Movie> = collection.values.toList()
 
-        if (query.names != null) {
-            returnList += collection.values.filter { movie -> query.names!!.contains(movie.name) }
+        if (query.andNames != null) {
+            returnList = returnList.filter { movie -> query.andNames!!.contains(movie.name) }
         }
 
-        return returnList
+        if (query.andIds != null) {
+            returnList = returnList.filter { movie -> query.andIds!!.contains(movie.id) }
+        }
+
+        if (query.andExcludeIds != null) {
+            returnList = returnList.filterNot { movie -> query.andExcludeIds!!.contains(movie.id) }
+        }
+
+        val orFilters = query.orActorIds != null || query.orDirectorIds != null || query.orCountryIds != null || query.orThemeIds != null || query.orGenreIds != null
+        if (orFilters) {
+            returnList = returnList.filter { movie ->
+                query.orGenreIds?.any { genreId -> movie.genreIds.contains(genreId) } == true ||
+                    query.orActorIds?.any { actorId -> movie.actorIds.contains(actorId) } == true ||
+                    query.orCountryIds?.contains(movie.countryId) == true ||
+                    query.orThemeIds?.any { themeId -> movie.themeIds.contains(themeId) } == true ||
+                    query.orDirectorIds?.any { directorId -> movie.directorIds.contains(directorId) } == true
+            }
+        }
+
+
+        return returnList.toSet().toList()
     }
 
     override fun nextId(): MovieId = nextIds.removeFirstOrNull() ?: MovieId(UUID.randomUUID())
