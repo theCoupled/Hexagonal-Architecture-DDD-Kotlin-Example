@@ -18,6 +18,10 @@ import com.thecoupled.movierecommenderapp.domain.movie.MovieDslBuilder
 import com.thecoupled.movierecommenderapp.domain.movie.MovieDslData
 import com.thecoupled.movierecommenderapp.domain.movie.MovieName
 import com.thecoupled.movierecommenderapp.domain.movie.arbitraryEmptyMovie
+import com.thecoupled.movierecommenderapp.domain.recommendation.Recommendation
+import com.thecoupled.movierecommenderapp.domain.recommendation.RecommendationDslData
+import com.thecoupled.movierecommenderapp.domain.recommendation.RecommendationScore
+import com.thecoupled.movierecommenderapp.domain.recommendation.arbitraryRecommendation
 import com.thecoupled.movierecommenderapp.domain.theme.Theme
 import com.thecoupled.movierecommenderapp.domain.theme.ThemeName
 import com.thecoupled.movierecommenderapp.domain.theme.arbitraryTheme
@@ -28,20 +32,21 @@ annotation class UserCaseSetupBuilder
 
 @UserCaseSetupBuilder
 class UserCaseSetupDslBuilder {
-    private val notViewedMoviesData: MutableSet<MovieDslData> = mutableSetOf()
-    private val likedMoviesData: MutableSet<MovieDslData> = mutableSetOf()
-    private val expectedRecommendations: MutableSet<MovieName> = mutableSetOf()
+    private var notViewedMoviesData: Set<MovieDslData> = setOf()
+    private var likedMoviesData: Set<MovieDslData> = setOf()
+    private var expectedRecommendations: Set<RecommendationDslData> = setOf()
 
-    fun notViewedMovie(block: MovieDslBuilder.() -> Unit) =
-        notViewedMoviesData.add(
-            MovieDslBuilder().apply(block).build()
-        )
+    fun likedMovies(block: MovieCollectionDslBuilder.() -> Unit) {
+        likedMoviesData = MovieCollectionDslBuilder().apply(block).build()
+    }
 
-    fun likedMovie(block: MovieDslBuilder.() -> Unit) =
-        likedMoviesData.add(
-            MovieDslBuilder().apply(block).build()
-        )
+    fun notViewedMovies(block: MovieCollectionDslBuilder.() -> Unit) {
+        notViewedMoviesData = MovieCollectionDslBuilder().apply(block).build()
+    }
 
+    fun expectedMovieRecommendations(block: RecommendationCollectionDslBuilder.() -> Unit) {
+        expectedRecommendations = RecommendationCollectionDslBuilder().apply(block).build()
+    }
 
     fun build(): UserCaseSetup {
         val user = arbitraryUser()
@@ -68,7 +73,7 @@ class UserCaseSetupDslBuilder {
                 themesMap = themesMap,
                 directorsMap = directorsMap
             )
-        }
+        }.associateBy { it.name }
         val notViewedMovies = notViewedMoviesData.map {
             it.toMovie(
                 countriesMap = countriesMap,
@@ -77,13 +82,19 @@ class UserCaseSetupDslBuilder {
                 themesMap = themesMap,
                 directorsMap = directorsMap
             )
-        }
-        val likes = likedMovies.map { movie -> arbitraryLike(movieId = movie.id, userId = user.id) }
+        }.associateBy { it.name }
+        val likes = likedMovies.values.map { movie -> arbitraryLike(movieId = movie.id, userId = user.id) }
 
         return UserCaseSetup(
             user = user,
-            movies = (likedMovies + notViewedMovies).toSet(),
-            likes = likes.toSet()
+            movies = (likedMovies + notViewedMovies).values.toSet(),
+            likes = likes.toSet(),
+            expectedRecommendations = expectedRecommendations.map { recommendationDslData ->
+                arbitraryRecommendation(
+                    movieId = notViewedMovies[recommendationDslData.movieName]!!.id,
+                    score = recommendationDslData.score
+                )
+            }.toSet()
         )
     }
 
@@ -103,6 +114,31 @@ class UserCaseSetupDslBuilder {
             directorsIds = this.directorNames.map { directorsMap[it]!!.id }.toSet()
         )
 }
+
+class MovieCollectionDslBuilder {
+    private val movies = mutableSetOf<MovieDslData>();
+    fun movie(block: MovieDslBuilder.() -> Unit) =
+        movies.add(
+            MovieDslBuilder().apply(block).build()
+        )
+
+    fun build(): Set<MovieDslData> = movies
+}
+
+class RecommendationCollectionDslBuilder {
+    private val recommendations = mutableSetOf<RecommendationDslData>()
+
+    fun recommendation(movie: String, score: Double) =
+        recommendations.add(
+            RecommendationDslData(
+                movieName = MovieName(movie),
+                score = RecommendationScore(score.toFloat())
+            )
+        )
+
+    fun build(): Set<RecommendationDslData> = recommendations
+}
+
 
 fun userCaseSetup(setupBlock: UserCaseSetupDslBuilder.() -> Unit): UserCaseSetup =
     UserCaseSetupDslBuilder().apply(setupBlock).build()
