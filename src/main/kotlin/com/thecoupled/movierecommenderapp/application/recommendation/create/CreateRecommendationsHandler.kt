@@ -11,6 +11,7 @@ import com.thecoupled.movierecommenderapp.domain.movie.Movie
 import com.thecoupled.movierecommenderapp.domain.movie.MoviesQuery
 import com.thecoupled.movierecommenderapp.domain.movie.MoviesRepository
 import com.thecoupled.movierecommenderapp.domain.recommendation.Recommendation
+import com.thecoupled.movierecommenderapp.domain.shared.DomainEvent
 import com.thecoupled.movierecommenderapp.domain.theme.ThemeId
 import com.thecoupled.movierecommenderapp.domain.user.UsersRepository
 
@@ -20,11 +21,12 @@ class CreateRecommendationsHandler(
     private val moviesRepository: MoviesRepository
 ) {
 
-    fun execute(command: CreateRecommendationsCommand): List<Recommendation> {
+    fun execute(command: CreateRecommendationsCommand): Pair<List<Recommendation>, List<DomainEvent>> {
         val user = usersRepository.find(command.userId)
         val userLikes = likesRepository.query(LikesQuery(userIds = setOf(command.userId)))
         val likedMovies = moviesRepository.query(MoviesQuery(ids = userLikes.map(Like::movieId).toSet()))
-        return listOf()
+
+        return Pair(listOf(), listOf())
     }
 
     private fun List<Movie>.getUserPattern(): UserPattern {

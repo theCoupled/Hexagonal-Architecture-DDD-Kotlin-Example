@@ -12,10 +12,12 @@ import com.thecoupled.movierecommenderapp.domain.director.DirectorsRepository
 import com.thecoupled.movierecommenderapp.domain.genre.Genre
 import com.thecoupled.movierecommenderapp.domain.genre.GenresQuery
 import com.thecoupled.movierecommenderapp.domain.genre.GenresRepository
+import com.thecoupled.movierecommenderapp.domain.movie.Movie
 import com.thecoupled.movierecommenderapp.domain.movie.MovieAlreadyExistingException
 import com.thecoupled.movierecommenderapp.domain.movie.MoviesQuery
 import com.thecoupled.movierecommenderapp.domain.movie.MoviesRepository
 import com.thecoupled.movierecommenderapp.domain.movie.createNewMovie
+import com.thecoupled.movierecommenderapp.domain.shared.DomainEvent
 import com.thecoupled.movierecommenderapp.domain.theme.Theme
 import com.thecoupled.movierecommenderapp.domain.theme.ThemesQuery
 import com.thecoupled.movierecommenderapp.domain.theme.ThemesRepository
@@ -28,19 +30,12 @@ class CreateMovieHandler(
     private val genresRepository: GenresRepository,
     private val directorsRepository: DirectorsRepository
 ) {
-    fun execute(command: CreateMovieCommand) {
+    fun execute(command: CreateMovieCommand): Pair<Movie, List<DomainEvent>> {
         command.assertMovieNotExisting()
-        moviesRepository.save(
-            createNewMovie(
-                moviesRepository = moviesRepository,
-                name = command.name,
-                country = command.getOrCreateCountry(),
-                themes = command.getOrCreateThemes(),
-                actors = command.getOrCreateActors(),
-                genres = command.getOrCreateGenres(),
-                directors = command.getOrCreateDirectors()
-            )
-        )
+        val createdMovie = command.createNewMovie()
+        moviesRepository.save(createdMovie)
+
+        return Pair(createdMovie, listOf())
     }
 
     private fun CreateMovieCommand.assertMovieNotExisting() {
@@ -48,6 +43,17 @@ class CreateMovieHandler(
             throw MovieAlreadyExistingException()
         }
     }
+
+    private fun CreateMovieCommand.createNewMovie(): Movie =
+        createNewMovie(
+            moviesRepository = moviesRepository,
+            name = this.name,
+            country = this.getOrCreateCountry(),
+            themes = this.getOrCreateThemes(),
+            actors = this.getOrCreateActors(),
+            genres = this.getOrCreateGenres(),
+            directors = this.getOrCreateDirectors()
+        )
 
     private fun CreateMovieCommand.getOrCreateCountry(): Country {
         val country = countriesRepository.query(CountriesQuery(names = setOf(this.countryName)))

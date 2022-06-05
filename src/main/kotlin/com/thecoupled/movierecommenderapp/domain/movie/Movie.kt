@@ -20,7 +20,21 @@ data class Movie(
     val directorIds: Set<DirectorId>,
     val themeIds: Set<ThemeId>,
     val countryId: CountryId
-) : Aggregate
+) : Aggregate {
+    init {
+        if (genreIds.isEmpty()) {
+            throw MissingGenreException()
+        }
+
+        if (directorIds.isEmpty()) {
+            throw MissingDirectorException()
+        }
+
+        if (themeIds.isEmpty()) {
+            throw MissingThemeException()
+        }
+    }
+}
 
 fun createNewMovie(
     moviesRepository: MoviesRepository,

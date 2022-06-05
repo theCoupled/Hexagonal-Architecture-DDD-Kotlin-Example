@@ -1,0 +1,3 @@
+package com.thecoupled.movierecommenderapp.domain.shared
+
+interface DomainEvent
