@@ -4,20 +4,16 @@ import com.thecoupled.movierecommenderapp.application.movie.create.CreateMovieCo
 import com.thecoupled.movierecommenderapp.application.movie.create.CreateMovieHandler
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/movies", produces = ["application/json"])
 class PostMovieController(
     private val createMovieHandler: CreateMovieHandler
 ) {
 
-    @PostMapping
-    fun postMovie(@RequestBody requestBody: PostMovieRequestBody) {
-        val i = 0
-        val o = 0
-        createMovieHandler.handle(requestBody.toCommand())
+    @PostMapping("/api/v1/movies", produces = ["application/json"])
+    fun postMovie(@RequestBody requestBody: PostMovieRequestBody): String {
+        return createMovieHandler.handle(requestBody.toCommand()).value.toString()
     }
 
     data class PostMovieRequestBody(
