@@ -1,3 +1,3 @@
 package com.thecoupled.movierecommenderapp.domain.theme
 
-class ThemeNameEmptyException : RuntimeException()
+class ThemeNameEmptyException : IllegalArgumentException()

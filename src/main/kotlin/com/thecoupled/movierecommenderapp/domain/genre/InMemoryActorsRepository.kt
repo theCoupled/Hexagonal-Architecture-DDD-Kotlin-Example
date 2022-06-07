@@ -1,8 +1,10 @@
 package com.thecoupled.movierecommenderapp.domain.genre
 
 import com.thecoupled.movierecommenderapp.domain.shared.InMemoryRepository
+import org.springframework.stereotype.Repository
 import java.util.*
 
+@Repository
 class InMemoryGenresRepository(
     private val existing: Set<Genre> = setOf(),
     private val nextIds: MutableList<GenreId> = mutableListOf()

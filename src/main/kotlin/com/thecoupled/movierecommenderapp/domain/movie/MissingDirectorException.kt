@@ -1,3 +1,3 @@
 package com.thecoupled.movierecommenderapp.domain.movie
 
-class MissingDirectorException : RuntimeException()
+class MissingDirectorException : IllegalArgumentException()

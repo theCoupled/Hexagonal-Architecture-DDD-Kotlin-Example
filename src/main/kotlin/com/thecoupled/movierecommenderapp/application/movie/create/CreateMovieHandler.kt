@@ -8,7 +8,9 @@ import com.thecoupled.movierecommenderapp.domain.genre.GenreName
 import com.thecoupled.movierecommenderapp.domain.movie.MovieId
 import com.thecoupled.movierecommenderapp.domain.movie.MovieName
 import com.thecoupled.movierecommenderapp.domain.theme.ThemeName
+import org.springframework.stereotype.Service
 
+@Service
 class CreateMovieHandler(private val movieCreator: MovieCreator) : Handler<CreateMovieCommand, MovieId> {
     override fun handle(command: CreateMovieCommand): MovieId =
         movieCreator.create(command.toMovieCreatorData()).first.id

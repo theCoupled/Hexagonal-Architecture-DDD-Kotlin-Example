@@ -2,8 +2,9 @@ package com.thecoupled.movierecommenderapp.domain.country
 
 
 import com.thecoupled.movierecommenderapp.domain.shared.InMemoryRepository
+import org.springframework.stereotype.Repository
 import java.util.*
-
+@Repository
 class InMemoryCountriesRepository(
     private val existing: Set<Country> = setOf(),
     private val nextIds: MutableList<CountryId> = mutableListOf()

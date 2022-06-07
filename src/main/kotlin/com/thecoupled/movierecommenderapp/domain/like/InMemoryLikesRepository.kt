@@ -1,12 +1,10 @@
 package com.thecoupled.movierecommenderapp.domain.like
 
-import com.thecoupled.movierecommenderapp.domain.genre.Genre
-import com.thecoupled.movierecommenderapp.domain.genre.GenreId
-import com.thecoupled.movierecommenderapp.domain.genre.GenresRepository
-import com.thecoupled.movierecommenderapp.domain.genre.InMemoryGenresRepository
 import com.thecoupled.movierecommenderapp.domain.shared.InMemoryRepository
+import org.springframework.stereotype.Repository
 import java.util.*
 
+@Repository
 class InMemoryLikesRepository(
     private val existing: Set<Like> = setOf(),
     private val nextIds: MutableList<LikeId> = mutableListOf()

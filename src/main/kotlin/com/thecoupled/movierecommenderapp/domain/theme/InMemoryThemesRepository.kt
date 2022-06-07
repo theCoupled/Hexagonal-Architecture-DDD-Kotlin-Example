@@ -1,8 +1,9 @@
 package com.thecoupled.movierecommenderapp.domain.theme
-
 import com.thecoupled.movierecommenderapp.domain.shared.InMemoryRepository
-import java.util.UUID
+import org.springframework.stereotype.Repository
+import java.util.*
 
+@Repository
 class InMemoryThemesRepository(
     private val existing: Set<Theme> = setOf(),
     private val nextIds: MutableList<ThemeId> = mutableListOf()

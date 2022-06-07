@@ -1,3 +1,3 @@
 package com.thecoupled.movierecommenderapp.domain.country
 
-class CountryNameEmptyException : RuntimeException()
+class CountryNameEmptyException : IllegalArgumentException()
