@@ -1,10 +1,21 @@
 package com.thecoupled.movierecommenderapp.domain.recommendation
 
 import com.thecoupled.movierecommenderapp.domain.movie.MovieId
-import java.util.UUID
+import com.thecoupled.movierecommenderapp.domain.user.UserId
+import java.util.*
 
 fun arbitraryRecommendation(
-    id : RecommendationId = RecommendationId(UUID.randomUUID()),
+    id: RecommendationId = RecommendationId(UUID.randomUUID()),
+    movieRecommendations: Set<MovieRecommendation> = setOf(),
+    userId: UserId = UserId(UUID.randomUUID())
+): Recommendation =
+    Recommendation(
+        id = id,
+        existingMovieRecommendations = movieRecommendations,
+        userId = userId
+    )
+
+fun arbitraryMovieRecommendation(
     movieId: MovieId = MovieId(UUID.randomUUID()),
     score: RecommendationScore = RecommendationScore(1.4F),
     info: RecommendationInfo = RecommendationInfo(
@@ -14,9 +25,8 @@ fun arbitraryRecommendation(
         themeIds = setOf(),
         countryIds = setOf()
     )
-): Recommendation =
-    Recommendation(
-        id = id,
+): MovieRecommendation =
+    MovieRecommendation(
         movieId = movieId,
         score = score,
         info = info

@@ -1,7 +1,7 @@
 package com.thecoupled.movierecommenderapp.application.recommendation.create
 
-import com.thecoupled.movierecommenderapp.domain.user.UserId
+import com.thecoupled.movierecommenderapp.application.shared.Command
 
 class CreateRecommendationsCommand(
-    val userId: UserId
-)
+    val userId: String
+): Command

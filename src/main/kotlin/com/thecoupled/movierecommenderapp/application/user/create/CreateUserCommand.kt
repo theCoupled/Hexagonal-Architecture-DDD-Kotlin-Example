@@ -1,9 +1,8 @@
 package com.thecoupled.movierecommenderapp.application.user.create
 
-import com.thecoupled.movierecommenderapp.domain.user.UserEmail
-import com.thecoupled.movierecommenderapp.domain.user.UserName
+import com.thecoupled.movierecommenderapp.application.shared.Command
 
 class CreateUserCommand(
-    val name: UserName,
-    val email: UserEmail
-)
+    val name: String,
+    val email: String
+) : Command

@@ -9,5 +9,5 @@ data class UserCaseSetup(
     val user: User,
     val movies: Set<Movie> = setOf(),
     val likes: Set<Like> = setOf(),
-    val expectedRecommendations: Set<Recommendation> = setOf()
+    val expectedRecommendation: Recommendation
 )

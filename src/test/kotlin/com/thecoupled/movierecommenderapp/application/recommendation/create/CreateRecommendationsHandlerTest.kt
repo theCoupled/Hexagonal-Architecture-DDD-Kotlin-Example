@@ -7,7 +7,6 @@ import com.thecoupled.movierecommenderapp.domain.movie.createMoviesRepository
 import com.thecoupled.movierecommenderapp.domain.recommendation.Recommendation
 import com.thecoupled.movierecommenderapp.domain.recommendation.RecommendationsRepository
 import com.thecoupled.movierecommenderapp.domain.recommendation.createRecommendationsRepository
-import com.thecoupled.movierecommenderapp.domain.shared.DomainEvent
 import com.thecoupled.movierecommenderapp.domain.shared.UserCaseSetup
 import com.thecoupled.movierecommenderapp.domain.shared.userCaseSetup
 import com.thecoupled.movierecommenderapp.domain.user.UsersRepository
@@ -35,9 +34,9 @@ class CreateRecommendationsHandlerTest {
             expectedMovieRecommendations { }
         }
 
-        val (result, _) = executeWithUserCaseSetup(userCaseSetup)
+        val result = executeWithUserCaseSetup(userCaseSetup)
 
-        assertTrue(result.isEmpty())
+        assertTrue(result.hasEmptyMovieRecommendations)
     }
 
     @Test
@@ -65,9 +64,9 @@ class CreateRecommendationsHandlerTest {
             expectedMovieRecommendations { }
         }
 
-        val (result, _) = executeWithUserCaseSetup(userCaseSetup)
+        val result = executeWithUserCaseSetup(userCaseSetup)
 
-        assertTrue(result.isEmpty())
+        assertTrue(result.hasEmptyMovieRecommendations)
     }
 
     @Test
@@ -96,7 +95,7 @@ class CreateRecommendationsHandlerTest {
             expectedMovieRecommendations { }
         }
 
-        val (result, _) = executeWithUserCaseSetup(userCaseSetup)
+        val result = executeWithUserCaseSetup(userCaseSetup)
 
         assertRecommendations(userCaseSetup, result)
     }
@@ -137,19 +136,19 @@ class CreateRecommendationsHandlerTest {
             }
         }
 
-        val (result, _) = executeWithUserCaseSetup(userCaseSetup)
+        val result = executeWithUserCaseSetup(userCaseSetup)
 
         assertRecommendations(userCaseSetup, result)
     }
 
-    private fun assertRecommendations(userCaseSetup: UserCaseSetup, returnedRecommendations: List<Recommendation>) {
-        if (userCaseSetup.expectedRecommendations.size != returnedRecommendations.size) {
+    private fun assertRecommendations(userCaseSetup: UserCaseSetup, returnedRecommendation: Recommendation) {
+        if (userCaseSetup.expectedRecommendation.numMovieRecommendations != returnedRecommendation.numMovieRecommendations) {
             throw AssertionFailedError(
-                "Expected different recommendations amount ${userCaseSetup.expectedRecommendations.size} != ${returnedRecommendations.size}"
+                "Expected different recommendations amount ${userCaseSetup.expectedRecommendation.numMovieRecommendations} != ${returnedRecommendation.numMovieRecommendations}"
             )
         }
 
-        userCaseSetup.expectedRecommendations.zip(returnedRecommendations).forEach { recommendationsPair ->
+        userCaseSetup.expectedRecommendation.movieRecommendations.zip(returnedRecommendation.movieRecommendations).forEach { recommendationsPair ->
             val isDataNotEqual = recommendationsPair.first.movieId != recommendationsPair.second.movieId ||
                 recommendationsPair.first.score != recommendationsPair.second.score
 
@@ -163,12 +162,17 @@ class CreateRecommendationsHandlerTest {
         }
     }
 
-    private fun executeWithUserCaseSetup(userCaseSetup: UserCaseSetup): Pair<List<Recommendation>, List<DomainEvent>> =
+    private fun executeWithUserCaseSetup(userCaseSetup: UserCaseSetup): Recommendation {
+        val recommendationsRepo = createRecommendationsRepository()
         createUseCase(
             usersRepository = createUsersRepository(setOf(userCaseSetup.user)),
             moviesRepository = createMoviesRepository(userCaseSetup.movies),
-            likesRepository = createLikesRepository(userCaseSetup.likes)
-        ).execute(CreateRecommendationsCommand(userCaseSetup.user.id))
+            likesRepository = createLikesRepository(userCaseSetup.likes),
+            recommendationsRepository = recommendationsRepo
+        ).handle(CreateRecommendationsCommand(userCaseSetup.user.id.value.toString()))
+
+        return recommendationsRepo.findAll().first()
+    }
 
     private fun createUseCase(
         usersRepository: UsersRepository = createUsersRepository(),
@@ -177,9 +181,11 @@ class CreateRecommendationsHandlerTest {
         recommendationsRepository: RecommendationsRepository = createRecommendationsRepository()
     ): CreateRecommendationsHandler =
         CreateRecommendationsHandler(
-            usersRepository = usersRepository,
-            moviesRepository = moviesRepository,
-            likesRepository = likesRepository,
-            recommendationsRepository = recommendationsRepository
+            RecommendationCreator(
+                usersRepository = usersRepository,
+                moviesRepository = moviesRepository,
+                likesRepository = likesRepository,
+                recommendationsRepository = recommendationsRepository
+            )
         )
 }

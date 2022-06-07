@@ -1,9 +1,8 @@
 package com.thecoupled.movierecommenderapp.application.like.create
 
-import com.thecoupled.movierecommenderapp.domain.movie.MovieId
-import com.thecoupled.movierecommenderapp.domain.user.UserId
+import com.thecoupled.movierecommenderapp.application.shared.Command
 
 class CreateLikeCommand(
-    val userId: UserId,
-    val movieId: MovieId
-)
+    val userId: String,
+    val movieId: String
+) : Command

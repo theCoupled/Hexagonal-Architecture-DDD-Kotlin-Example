@@ -2,7 +2,7 @@ package com.thecoupled.movierecommenderapp.domain.recommendation
 
 import com.thecoupled.movierecommenderapp.domain.movie.MovieName
 
-data class RecommendationDslData(
+data class MovieRecommendationDslData(
     val movieName: MovieName,
     val score: RecommendationScore
 )
