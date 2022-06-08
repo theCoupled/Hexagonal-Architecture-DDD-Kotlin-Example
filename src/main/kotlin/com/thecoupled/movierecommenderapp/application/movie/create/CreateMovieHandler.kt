@@ -1,6 +1,6 @@
 package com.thecoupled.movierecommenderapp.application.movie.create
 
-import com.thecoupled.movierecommenderapp.application.shared.Handler
+import com.thecoupled.movierecommenderapp.application.shared.bus.command.CommandHandler
 import com.thecoupled.movierecommenderapp.domain.actor.ActorName
 import com.thecoupled.movierecommenderapp.domain.country.CountryName
 import com.thecoupled.movierecommenderapp.domain.director.DirectorName
@@ -11,7 +11,7 @@ import com.thecoupled.movierecommenderapp.domain.theme.ThemeName
 import org.springframework.stereotype.Service
 
 @Service
-class CreateMovieHandler(private val movieCreator: MovieCreator) : Handler<CreateMovieCommand, MovieId> {
+class CreateMovieHandler(private val movieCreator: MovieCreator) : CommandHandler<CreateMovieCommand, MovieId> {
     override fun handle(command: CreateMovieCommand): MovieId =
         movieCreator.create(command.toMovieCreatorData()).first.id
 

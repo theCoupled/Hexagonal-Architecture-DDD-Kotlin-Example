@@ -1,0 +1,3 @@
+package com.thecoupled.movierecommenderapp.api.http.shared
+
+interface HttpResponsePayload

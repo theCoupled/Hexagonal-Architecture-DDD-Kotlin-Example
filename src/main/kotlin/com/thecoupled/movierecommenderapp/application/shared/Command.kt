@@ -1,3 +1,0 @@
-package com.thecoupled.movierecommenderapp.application.shared
-
-interface Command
