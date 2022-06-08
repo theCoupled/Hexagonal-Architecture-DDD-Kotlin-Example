@@ -7,14 +7,34 @@
   (CQRS) principles</strong>.
 </p>
 
-## 🚀 Environment Setup
+# Table of Contents
+1. [Environment Setup](#environment-setup)
+2. [Project Architecture](#project-architecture)
+3. [The project: Movie Recommendations App](#the-project-movie-recommendations-app)
+
+
+
+Environment Setup
+-----------
+
 ### ✅ Requirements
 TODO
 ### ✅ Run the application
 TODO
 ### ✅ Tests execution
 TODO
-## 🚀 Project Architecture
+
+Project Architecture
+-----------
+
 TODO
 
-## 🎥 The project: Movie Recommendations App
+The project: Movie Recommendations App
+-----------
+
+TODO
+
+
+
+
+
