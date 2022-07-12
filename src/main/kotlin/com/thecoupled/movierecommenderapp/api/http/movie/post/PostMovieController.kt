@@ -43,10 +43,10 @@ class PostMovieController(
     private fun PostMovieRequestBody.toCommand(): CreateMovieCommand =
         CreateMovieCommand(
             name = this.name,
-            genreNames = this.genreIds.toSet(),
-            themeNames = this.themeIds.toSet(),
-            actorNames = this.actorIds.toSet(),
-            directorNames = this.directorIds.toSet(),
-            countryName = this.countryId
+            genreIds = this.genreIds.toSet(),
+            themeIds = this.themeIds.toSet(),
+            actorIds = this.actorIds.toSet(),
+            directorIds = this.directorIds.toSet(),
+            countryId = this.countryId
         )
 }

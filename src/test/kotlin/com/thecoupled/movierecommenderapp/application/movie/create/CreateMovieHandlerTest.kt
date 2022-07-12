@@ -2,7 +2,6 @@ package com.thecoupled.movierecommenderapp.application.movie.create
 
 import com.thecoupled.movierecommenderapp.domain.actor.ActorId
 import com.thecoupled.movierecommenderapp.domain.actor.ActorName
-import com.thecoupled.movierecommenderapp.domain.actor.ActorNameEmptyException
 import com.thecoupled.movierecommenderapp.domain.actor.ActorsRepository
 import com.thecoupled.movierecommenderapp.domain.actor.arbitraryActor
 import com.thecoupled.movierecommenderapp.domain.actor.createActorsRepository
@@ -89,7 +88,7 @@ class CreateMovieHandlerTest {
         assertThrows<GenreNameEmptyException> {
             useCase.handle(
                 createCommand(
-                    genreNames = setOf("")
+                    genreIds = setOf("")
                 )
             )
         }
@@ -102,20 +101,20 @@ class CreateMovieHandlerTest {
         assertThrows<MissingGenreException> {
             useCase.handle(
                 createCommand(
-                    genreNames = setOf()
+                    genreIds = setOf()
                 )
             )
         }
     }
 
     @Test
-    fun `should throw exception when movie actor names are blank`() {
+    fun `should throw exception when movie genre ids is empty`() {
         val useCase = createUseCase()
 
-        assertThrows<ActorNameEmptyException> {
+        assertThrows<MissingGenreException> {
             useCase.handle(
                 createCommand(
-                    actorNames = setOf("")
+                    genreIds = setOf("")
                 )
             )
         }
@@ -251,7 +250,7 @@ class CreateMovieHandlerTest {
 
         useCase.handle(
             createCommand(
-                actorNames = setOf(newActorName)
+                actorIds = setOf(newActorName)
             )
         )
 
@@ -268,7 +267,7 @@ class CreateMovieHandlerTest {
         val actorsRepo = createActorsRepository(setOf(existingActor))
         val useCase = createUseCase(actorsRepository = actorsRepo)
 
-        useCase.handle(createCommand(actorNames = setOf(" ARBITRARY existing actor NAME ")))
+        useCase.handle(createCommand(actorIds = setOf(" ARBITRARY existing actor NAME ")))
 
         val createdActors = actorsRepo.findAll()
         val fetchedActor = createdActors.first()
@@ -325,7 +324,7 @@ class CreateMovieHandlerTest {
 
         useCase.handle(
             createCommand(
-                genreNames = setOf(newGenreName)
+                genreIds = setOf(newGenreName)
             )
         )
 
@@ -342,7 +341,7 @@ class CreateMovieHandlerTest {
         val genresRepo = createGenresRepository(setOf(existingGenre))
         val useCase = createUseCase(genresRepository = genresRepo)
 
-        useCase.handle(createCommand(genreNames = setOf(" ARBITRARY existing genre NAME ")))
+        useCase.handle(createCommand(genreIds = setOf(" ARBITRARY existing genre NAME ")))
 
         val createdGenres = genresRepo.findAll()
         val fetchedGenre = createdGenres.first()
@@ -455,7 +454,7 @@ class CreateMovieHandlerTest {
             moviesRepository = moviesRepo
         )
 
-        useCase.handle(createCommand(genreNames = setOf(genreName1, genreName2)))
+        useCase.handle(createCommand(genreIds = setOf(genreName1, genreName2)))
 
         val fetchedMovie = moviesRepo.findAll().first()
         assertEquals(setOf(genreId1, genreId2), fetchedMovie.genreIds)
@@ -472,7 +471,7 @@ class CreateMovieHandlerTest {
             moviesRepository = moviesRepo
         )
 
-        useCase.handle(createCommand(genreNames = setOf(genre1.name.value, genre2.name.value)))
+        useCase.handle(createCommand(genreIds = setOf(genre1.name.value, genre2.name.value)))
 
         val fetchedMovie = moviesRepo.findAll().first()
         assertEquals(setOf(genre1.id, genre2.id), fetchedMovie.genreIds)
@@ -563,7 +562,7 @@ class CreateMovieHandlerTest {
             moviesRepository = moviesRepo
         )
 
-        useCase.handle(createCommand(actorNames = setOf(actorName1, actorName2)))
+        useCase.handle(createCommand(actorIds = setOf(actorName1, actorName2)))
 
         val fetchedMovie = moviesRepo.findAll().first()
         assertEquals(setOf(actorId1, actorId2), fetchedMovie.actorIds)
@@ -580,7 +579,7 @@ class CreateMovieHandlerTest {
             moviesRepository = moviesRepo
         )
 
-        useCase.handle(createCommand(actorNames = setOf(actor1.name.value, actor2.name.value)))
+        useCase.handle(createCommand(actorIds = setOf(actor1.name.value, actor2.name.value)))
 
         val fetchedMovie = moviesRepo.findAll().first()
         assertEquals(setOf(actor1.id, actor2.id), fetchedMovie.actorIds)
@@ -588,18 +587,18 @@ class CreateMovieHandlerTest {
 
     private fun createCommand(
         name: String = "arbitrary movie name",
-        genreNames: Set<String> = setOf("arbitrary genre name"),
-        actorNames: Set<String> = setOf("arbitrary actor name"),
+        genreIds: Set<String> = setOf(UUID.randomUUID().toString()),
+        actorIds: Set<String> = setOf(UUID.randomUUID().toString()),
         directorNames: Set<String> = setOf("arbitrary director name"),
         themeNames: Set<String> = setOf("arbitrary theme name"),
         countryName: String = "arbitrary country name"
     ): CreateMovieCommand =
         CreateMovieCommand(
             name = name,
-            genreNames = genreNames,
-            actorNames = actorNames,
-            directorNames = directorNames,
-            themeNames = themeNames,
-            countryName = countryName
+            genreIds = genreIds,
+            actorIds = actorIds,
+            directorIds = directorNames,
+            themeIds = themeNames,
+            countryId = countryName
         )
 }

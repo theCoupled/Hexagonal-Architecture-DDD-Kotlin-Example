@@ -42,8 +42,8 @@ data class Movie(
 fun createNewMovie(
     moviesRepository: MoviesRepository,
     name: MovieName,
-    genres: Set<Genre>,
-    actors: Set<Actor>,
+    genres: List<Genre>,
+    actors: List<Actor>,
     directors: Set<Director>,
     themes: Set<Theme>,
     country: Country,

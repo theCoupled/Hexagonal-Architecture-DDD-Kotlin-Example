@@ -4,9 +4,9 @@ import com.thecoupled.movierecommenderapp.application.shared.bus.command.Command
 
 data class CreateMovieCommand(
     val name: String,
-    val genreNames: Set<String>,
-    val actorNames: Set<String>,
-    val directorNames: Set<String>,
-    val themeNames: Set<String>,
-    val countryName: String
+    val genreIds: Set<String>,
+    val actorIds: Set<String>,
+    val directorIds: Set<String>,
+    val themeIds: Set<String>,
+    val countryId: String
 ) : Command
