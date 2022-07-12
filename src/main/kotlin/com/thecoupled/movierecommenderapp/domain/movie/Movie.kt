@@ -22,7 +22,8 @@ data class Movie(
     val directorIds: Set<DirectorId>,
     val themeIds: Set<ThemeId>,
     val countryId: CountryId,
-    val createdAt: Instant
+    val createdAt: Instant,
+    val updatedAt: Instant
 ) : Aggregate {
     init {
         if (genreIds.isEmpty()) {
@@ -57,5 +58,6 @@ fun createNewMovie(
         directorIds = directors.map(Director::id).toSet(),
         themeIds = themes.map(Theme::id).toSet(),
         countryId = country.id,
-        createdAt = Instant.now(clock)
+        createdAt = Instant.now(clock),
+        updatedAt = Instant.now(clock)
     )

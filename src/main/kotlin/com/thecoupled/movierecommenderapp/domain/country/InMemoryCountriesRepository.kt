@@ -3,7 +3,7 @@ package com.thecoupled.movierecommenderapp.domain.country
 
 import com.thecoupled.movierecommenderapp.domain.shared.InMemoryRepository
 import org.springframework.stereotype.Repository
-import java.util.*
+
 @Repository
 class InMemoryCountriesRepository(
     private val existing: Set<Country> = setOf(),
@@ -19,8 +19,6 @@ class InMemoryCountriesRepository(
 
         return returnList
     }
-
-    override fun nextId(): CountryId = nextIds.removeFirstOrNull() ?: CountryId(UUID.randomUUID())
 }
 
 fun createCountriesRepository(

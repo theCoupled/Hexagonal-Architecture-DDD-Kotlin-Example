@@ -1,5 +1,8 @@
 package com.thecoupled.movierecommenderapp.domain.movie
 
+import arrow.core.Invalid
+import arrow.core.Valid
+import arrow.core.Validated.Valid
 import com.thecoupled.movierecommenderapp.domain.shared.InMemoryRepository
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -40,7 +43,12 @@ class InMemoryMoviesRepository(
         return returnList.toSet().toList()
     }
 
-    override fun nextId(): MovieId = nextIds.removeFirstOrNull() ?: MovieId(UUID.randomUUID())
+    override fun nextId(): MovieId = nextIds.removeFirstOrNull() ?:
+    val id = MovieId.createFromString(UUID.randomUUID().toString())
+    when(id) {
+        is Valid -> id
+        is Invalid -> throw Exception("Invalid generated id")
+    }
 }
 
 fun createMoviesRepository(

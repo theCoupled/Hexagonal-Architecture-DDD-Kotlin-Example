@@ -11,8 +11,12 @@ class InMemoryThemesRepository(
     override fun query(query: ThemesQuery): List<Theme> {
         val returnList: MutableList<Theme> = mutableListOf()
 
+        if (query.ids != null) {
+            returnList += collection.values.filter { entity -> query.ids.contains(entity.id) }
+        }
+
         if (query.names != null) {
-            returnList += collection.values.filter { entity -> query.names!!.contains(entity.name) }
+            returnList += collection.values.filter { entity -> query.names.contains(entity.name) }
         }
 
         return returnList

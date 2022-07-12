@@ -1,7 +1,6 @@
 package com.thecoupled.movierecommenderapp.domain.genre
 
-import java.util.*
-
+/*
 fun arbitraryGenre(
     id: GenreId = GenreId(UUID.randomUUID()),
     name: GenreName = GenreName("random name")
@@ -10,3 +9,5 @@ fun arbitraryGenre(
         id = id,
         name = name
     )
+
+ */

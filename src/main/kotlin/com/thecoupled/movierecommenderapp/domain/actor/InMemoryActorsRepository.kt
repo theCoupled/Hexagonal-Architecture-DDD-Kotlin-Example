@@ -12,8 +12,12 @@ class InMemoryActorsRepository(
     override fun query(query: ActorsQuery): List<Actor> {
         val returnList: MutableList<Actor> = mutableListOf()
 
+        if (query.ids != null) {
+            returnList += collection.values.filter { entity -> query.ids.contains(entity.id) }
+        }
+
         if (query.names != null) {
-            returnList += collection.values.filter { entity -> query.names!!.contains(entity.name) }
+            returnList += collection.values.filter { entity -> query.names.contains(entity.name) }
         }
 
         return returnList

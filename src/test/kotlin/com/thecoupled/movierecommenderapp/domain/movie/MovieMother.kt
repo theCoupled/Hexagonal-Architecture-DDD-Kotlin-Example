@@ -1,5 +1,9 @@
 package com.thecoupled.movierecommenderapp.domain.movie
 
+import arrow.core.Invalid
+import arrow.core.Valid
+import arrow.core.traverse
+import arrow.core.zip
 import com.thecoupled.movierecommenderapp.domain.actor.ActorId
 import com.thecoupled.movierecommenderapp.domain.country.CountryId
 import com.thecoupled.movierecommenderapp.domain.director.DirectorId
@@ -8,6 +12,46 @@ import com.thecoupled.movierecommenderapp.domain.theme.ThemeId
 import java.time.Instant
 import java.util.*
 
+fun arbitraryMovie(
+    movieId: String = UUID.randomUUID().toString(),
+    movieName: String = "arbitrary movie name",
+    actorIds : List<String> = listOf(UUID.randomUUID().toString()),
+    genreIds: List<String> = listOf(UUID.randomUUID().toString()),
+    themeIds: List<String> = listOf(UUID.randomUUID().toString()),
+    directorIds: List<String> = listOf(UUID.randomUUID().toString()),
+    countryId: String = UUID.randomUUID().toString(),
+    createdAt: Instant = Instant.now(),
+    updatedAt: Instant = Instant.now()
+): Movie {
+    val movie = MovieId.createFromString(movieId).zip(
+        MovieName(movieName),
+        actorIds.traverse { ActorId.createFromString(it) },
+        genreIds.traverse { GenreId.createFromString(it) },
+        themeIds.traverse { ThemeId.createFromString(it) },
+        directorIds.traverse { DirectorId.createFromString(it) },
+        CountryId.createFromString(countryId)
+    ) { movieId, movieName, actorIds, genreIds, themeIds, directorIds, countryId ->
+        Movie(
+            id = movieId,
+            name = movieName,
+            genreIds = genreIds.toSet(),
+            actorIds = actorIds.toSet(),
+            themeIds = themeIds.toSet(),
+            directorIds = directorIds.toSet(),
+            countryId = countryId,
+            createdAt = createdAt,
+            updatedAt = updatedAt
+        )
+    }
+
+    return when(movie) {
+        is Valid -> movie.value
+        is Invalid -> throw Exception("Invalid model")
+    }
+}
+
+
+/*
 fun arbitraryEnrichedMovie(
     id: MovieId = MovieId(UUID.randomUUID()),
     name: MovieName = MovieName("arbitrary movie name"),
@@ -49,3 +93,5 @@ fun arbitraryEmptyMovie(
         countryId = countryId,
         createdAt = createdAt
     )
+
+ */

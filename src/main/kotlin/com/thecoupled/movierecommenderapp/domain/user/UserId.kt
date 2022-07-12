@@ -1,7 +1,7 @@
 package com.thecoupled.movierecommenderapp.domain.user
 
 import com.thecoupled.movierecommenderapp.domain.shared.AggregateId
-import java.util.UUID
+import java.util.*
 
 @JvmInline
-value class UserId(override val value: UUID) : AggregateId
+value class UserId(val value: UUID) : AggregateId

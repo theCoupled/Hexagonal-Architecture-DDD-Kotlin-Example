@@ -1,37 +1,11 @@
 package com.thecoupled.movierecommenderapp.domain.shared
 
-import com.thecoupled.movierecommenderapp.domain.actor.Actor
-import com.thecoupled.movierecommenderapp.domain.actor.ActorName
-import com.thecoupled.movierecommenderapp.domain.actor.arbitraryActor
-import com.thecoupled.movierecommenderapp.domain.country.Country
-import com.thecoupled.movierecommenderapp.domain.country.CountryName
-import com.thecoupled.movierecommenderapp.domain.country.arbitraryCountry
-import com.thecoupled.movierecommenderapp.domain.director.Director
-import com.thecoupled.movierecommenderapp.domain.director.DirectorName
-import com.thecoupled.movierecommenderapp.domain.director.arbitraryDirector
-import com.thecoupled.movierecommenderapp.domain.genre.Genre
-import com.thecoupled.movierecommenderapp.domain.genre.GenreName
-import com.thecoupled.movierecommenderapp.domain.genre.arbitraryGenre
-import com.thecoupled.movierecommenderapp.domain.like.arbitraryLike
-import com.thecoupled.movierecommenderapp.domain.movie.Movie
-import com.thecoupled.movierecommenderapp.domain.movie.MovieDslBuilder
-import com.thecoupled.movierecommenderapp.domain.movie.MovieDslData
-import com.thecoupled.movierecommenderapp.domain.movie.MovieName
-import com.thecoupled.movierecommenderapp.domain.movie.arbitraryEmptyMovie
-import com.thecoupled.movierecommenderapp.domain.recommendation.MovieRecommendationDslData
-import com.thecoupled.movierecommenderapp.domain.recommendation.RecommendationScore
-import com.thecoupled.movierecommenderapp.domain.recommendation.arbitraryMovieRecommendation
-import com.thecoupled.movierecommenderapp.domain.recommendation.arbitraryRecommendation
-import com.thecoupled.movierecommenderapp.domain.theme.Theme
-import com.thecoupled.movierecommenderapp.domain.theme.ThemeName
-import com.thecoupled.movierecommenderapp.domain.theme.arbitraryTheme
-import com.thecoupled.movierecommenderapp.domain.user.arbitraryUser
-
 @DslMarker
 annotation class UserCaseSetupBuilder
-
+/*
 @UserCaseSetupBuilder
 class UserCaseSetupDslBuilder {
+
     private var notViewedMoviesData: Set<MovieDslData> = setOf()
     private var likedMoviesData: Set<MovieDslData> = setOf()
     private var expectedMovieRecommendations: Set<MovieRecommendationDslData> = setOf()
@@ -144,5 +118,7 @@ class RecommendationCollectionDslBuilder {
 
 fun userCaseSetup(setupBlock: UserCaseSetupDslBuilder.() -> Unit): UserCaseSetup =
     UserCaseSetupDslBuilder().apply(setupBlock).build()
+
+ */
 
 

@@ -1,24 +1,26 @@
 package com.thecoupled.movierecommenderapp.application.movie.create
 
-import com.thecoupled.movierecommenderapp.domain.actor.Actor
-import com.thecoupled.movierecommenderapp.domain.actor.ActorsQuery
+import arrow.core.Invalid
+import arrow.core.NonEmptyList
+import arrow.core.Validated
+import arrow.core.invalidNel
+import arrow.core.validNel
+import arrow.core.zip
 import com.thecoupled.movierecommenderapp.domain.actor.ActorsRepository
-import com.thecoupled.movierecommenderapp.domain.country.CountriesQuery
 import com.thecoupled.movierecommenderapp.domain.country.CountriesRepository
-import com.thecoupled.movierecommenderapp.domain.country.Country
-import com.thecoupled.movierecommenderapp.domain.director.Director
+import com.thecoupled.movierecommenderapp.domain.director.DirectorId
+import com.thecoupled.movierecommenderapp.domain.director.DirectorNotFoundError
 import com.thecoupled.movierecommenderapp.domain.director.DirectorsQuery
 import com.thecoupled.movierecommenderapp.domain.director.DirectorsRepository
-import com.thecoupled.movierecommenderapp.domain.genre.Genre
+import com.thecoupled.movierecommenderapp.domain.genre.GenreId
+import com.thecoupled.movierecommenderapp.domain.genre.GenreNotFoundError
 import com.thecoupled.movierecommenderapp.domain.genre.GenresQuery
 import com.thecoupled.movierecommenderapp.domain.genre.GenresRepository
-import com.thecoupled.movierecommenderapp.domain.movie.Movie
-import com.thecoupled.movierecommenderapp.domain.movie.MovieAlreadyExistingException
-import com.thecoupled.movierecommenderapp.domain.movie.MoviesQuery
 import com.thecoupled.movierecommenderapp.domain.movie.MoviesRepository
-import com.thecoupled.movierecommenderapp.domain.movie.createNewMovie
-import com.thecoupled.movierecommenderapp.domain.shared.DomainEvent
-import com.thecoupled.movierecommenderapp.domain.theme.Theme
+import com.thecoupled.movierecommenderapp.domain.movie.errors.MovieValidationError
+import com.thecoupled.movierecommenderapp.domain.shared.error.DomainErrors
+import com.thecoupled.movierecommenderapp.domain.theme.ThemeId
+import com.thecoupled.movierecommenderapp.domain.theme.ThemeNotFoundError
 import com.thecoupled.movierecommenderapp.domain.theme.ThemesQuery
 import com.thecoupled.movierecommenderapp.domain.theme.ThemesRepository
 import java.time.Clock
@@ -32,86 +34,76 @@ class MovieCreator(
     private val directorsRepository: DirectorsRepository,
     private val clock: Clock
 ) {
-    fun create(movieCreatorData: MovieCreatorData): Pair<Movie, List<DomainEvent>> {
-        movieCreatorData.assertMovieNotExisting()
-        val createdMovie = movieCreatorData.createNewMovie()
-        moviesRepository.save(createdMovie)
+    fun create(movieCreatorData: MovieCreatorDataSample): Validated<DomainErrors, String> {
 
-        return Pair(createdMovie, listOf())
-    }
-
-    private fun MovieCreatorData.assertMovieNotExisting() {
-        if (moviesRepository.query(MoviesQuery(andNames = setOf(this.name))).isNotEmpty()) {
-            throw MovieAlreadyExistingException()
+        return movieCreatorData.directorIds.assertNotEmpty().zip(
+            movieCreatorData.genreIds.assertNotEmpty(),
+            movieCreatorData.themeIds.assertNotEmpty()
+        ) { directorIds, genreIds, themeIds ->
+            return directorIds.assertExisting().zip(
+                themeIds.assertExisting(),
+                genreIds.assertExisting()
+            ) { directorIds, genreIds, themeIds ->
+                "generated id"
+            }
         }
     }
 
-    private fun MovieCreatorData.createNewMovie(): Movie =
-        createNewMovie(
-            moviesRepository = moviesRepository,
-            name = this.name,
-            country = this.getOrCreateCountry(),
-            themes = this.getOrCreateThemes(),
-            actors = this.getOrCreateActors(),
-            genres = this.getOrCreateGenres(),
-            directors = this.getOrCreateDirectors(),
-            clock = clock
-        )
+    private fun Set<DirectorId>.assertNotEmpty(): Validated<DomainErrors, Set<DirectorId>> =
+        when (isEmpty()) {
+            true -> MovieValidationError.MissingDirectorIdError.invalidNel()
+            else -> this.validNel()
+        }
 
-    private fun MovieCreatorData.getOrCreateCountry(): Country {
-        val country = countriesRepository.query(CountriesQuery(names = setOf(this.countryName)))
-            .firstOrNull() ?: Country(
-            id = countriesRepository.nextId(),
-            name = this.countryName
-        )
+    @JvmName("assertNotEmptyGenreId")
+    private fun Set<GenreId>.assertNotEmpty(): Validated<DomainErrors, Set<GenreId>> =
+        when (isEmpty()) {
+            true -> MovieValidationError.MissingGenreIdError.invalidNel()
+            else -> this.validNel()
+        }
 
-        countriesRepository.save(country)
+    @JvmName("assertNotEmptyThemeId")
+    private fun Set<ThemeId>.assertNotEmpty(): Validated<DomainErrors, Set<ThemeId>> =
+        when (isEmpty()) {
+            true -> MovieValidationError.MissingThemeIdError.invalidNel()
+            else -> this.validNel()
+        }
 
-        return country
+    private fun Set<DirectorId>.assertExisting(): Validated<DomainErrors, Set<DirectorId>> {
+        val existingDirectorIds = directorsRepository.query(DirectorsQuery(ids = this)).map { it.id }
+        val missingDirectoryIds = this.filterNot { existingDirectorIds.contains(it) }
+
+        if (missingDirectoryIds.isNotEmpty()) {
+            val errors = missingDirectoryIds.map { DirectorNotFoundError(it.toString()) }
+            return Invalid(NonEmptyList.fromListUnsafe(errors))
+        }
+
+        return this.validNel()
     }
 
+    @JvmName("assertExistingThemeId")
+    private fun Set<ThemeId>.assertExisting(): Validated<DomainErrors, Set<ThemeId>> {
+        val existingThemeIds = themesRepository.query(ThemesQuery(ids = this)).map { it.id }
+        val missingThemes = this.filterNot { existingThemeIds.contains(it) }
 
-    private fun MovieCreatorData.getOrCreateThemes(): Set<Theme> {
-        val existingThemes = themesRepository.query(ThemesQuery(names = this.themeNames))
-        val createdThemes = this.themeNames
-            .filterNot { themeName -> existingThemes.any { existingTheme -> existingTheme.name == themeName } }
-            .map { themeName -> Theme(id = themesRepository.nextId(), name = themeName) }
+        if (missingThemes.isNotEmpty()) {
+            val errors = missingThemes.map { ThemeNotFoundError(it.toString()) }
+            return Invalid(NonEmptyList.fromListUnsafe(errors))
+        }
 
-        createdThemes.forEach(themesRepository::save)
-
-        return (existingThemes + createdThemes).toSet()
+        return this.validNel()
     }
 
-    private fun MovieCreatorData.getOrCreateActors(): Set<Actor> {
-        val existingActors = actorsRepository.query(ActorsQuery(names = this.actorNames))
-        val createdActors = this.actorNames
-            .filterNot { actorName -> existingActors.any { existingActor -> existingActor.name == actorName } }
-            .map { actorName -> Actor(id = actorsRepository.nextId(), name = actorName) }
+    @JvmName("assertExistingGenreId")
+    private fun Set<GenreId>.assertExisting(): Validated<DomainErrors, Set<GenreId>> {
+        val existingGenreIds = genresRepository.query(GenresQuery(ids = this)).map { it.id }
+        val missingGenreIds = this.filterNot { existingGenreIds.contains(it) }
 
-        createdActors.forEach(actorsRepository::save)
+        if (missingGenreIds.isNotEmpty()) {
+            val errors = missingGenreIds.map { GenreNotFoundError(it.toString()) }
+            return Invalid(NonEmptyList.fromListUnsafe(errors))
+        }
 
-        return (existingActors + createdActors).toSet()
-    }
-
-    private fun MovieCreatorData.getOrCreateGenres(): Set<Genre> {
-        val existingGenres = genresRepository.query(GenresQuery(names = this.genreNames))
-        val createdGenres = this.genreNames
-            .filterNot { genreName -> existingGenres.any { existingGenre -> existingGenre.name == genreName } }
-            .map { genreName -> Genre(id = genresRepository.nextId(), name = genreName) }
-
-        createdGenres.forEach(genresRepository::save)
-
-        return (existingGenres + createdGenres).toSet()
-    }
-
-    private fun MovieCreatorData.getOrCreateDirectors(): Set<Director> {
-        val existingDirectors = directorsRepository.query(DirectorsQuery(names = this.directorNames))
-        val createdDirectors = this.directorNames
-            .filterNot { directorName -> existingDirectors.any { existingDirector -> existingDirector.name == directorName } }
-            .map { directorName -> Director(id = directorsRepository.nextId(), name = directorName) }
-
-        createdDirectors.forEach(directorsRepository::save)
-
-        return (existingDirectors + createdDirectors).toSet()
+        return this.validNel()
     }
 }

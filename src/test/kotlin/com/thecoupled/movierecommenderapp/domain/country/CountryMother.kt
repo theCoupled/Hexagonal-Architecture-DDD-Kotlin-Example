@@ -1,7 +1,6 @@
 package com.thecoupled.movierecommenderapp.domain.country
 
-import java.util.*
-
+/*
 fun arbitraryCountry(
     id: CountryId = CountryId(UUID.randomUUID()),
     name: CountryName = CountryName("random name")
@@ -10,3 +9,5 @@ fun arbitraryCountry(
         id = id,
         name = name
     )
+
+ */

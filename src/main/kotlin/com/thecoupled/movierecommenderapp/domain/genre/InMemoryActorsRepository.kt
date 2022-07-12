@@ -2,7 +2,6 @@ package com.thecoupled.movierecommenderapp.domain.genre
 
 import com.thecoupled.movierecommenderapp.domain.shared.InMemoryRepository
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
 class InMemoryGenresRepository(
@@ -12,14 +11,17 @@ class InMemoryGenresRepository(
     override fun query(query: GenresQuery): List<Genre> {
         val returnList: MutableList<Genre> = mutableListOf()
 
+        if (query.ids != null) {
+            returnList += collection.values.filter { entity -> query.ids.contains(entity.id) }
+        }
+
         if (query.names != null) {
-            returnList += collection.values.filter { entity -> query.names!!.contains(entity.name) }
+            returnList += collection.values.filter { entity -> query.names.contains(entity.name) }
         }
 
         return returnList
     }
 
-    override fun nextId(): GenreId = nextIds.removeFirstOrNull() ?: GenreId(UUID.randomUUID())
 }
 
 fun createGenresRepository(

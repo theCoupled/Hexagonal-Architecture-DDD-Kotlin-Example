@@ -1,22 +1,7 @@
 package com.thecoupled.movierecommenderapp.application.recommendation.create
 
-import com.thecoupled.movierecommenderapp.domain.like.LikesRepository
-import com.thecoupled.movierecommenderapp.domain.like.createLikesRepository
-import com.thecoupled.movierecommenderapp.domain.movie.MoviesRepository
-import com.thecoupled.movierecommenderapp.domain.movie.createMoviesRepository
-import com.thecoupled.movierecommenderapp.domain.recommendation.Recommendation
-import com.thecoupled.movierecommenderapp.domain.recommendation.RecommendationsRepository
-import com.thecoupled.movierecommenderapp.domain.recommendation.createRecommendationsRepository
-import com.thecoupled.movierecommenderapp.domain.shared.UserCaseSetup
-import com.thecoupled.movierecommenderapp.domain.shared.userCaseSetup
-import com.thecoupled.movierecommenderapp.domain.user.UsersRepository
-import com.thecoupled.movierecommenderapp.domain.user.createUsersRepository
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
-import org.opentest4j.AssertionFailedError
-
 class CreateRecommendationsHandlerTest {
-
+/*
     @Test
     fun `should not recommend any movie when no movies available`() {
         val userCaseSetup = userCaseSetup {
@@ -188,4 +173,6 @@ class CreateRecommendationsHandlerTest {
                 recommendationsRepository = recommendationsRepository
             )
         )
+
+ */
 }

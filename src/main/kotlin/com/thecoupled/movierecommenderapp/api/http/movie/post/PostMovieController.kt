@@ -17,13 +17,23 @@ class PostMovieController(
 
     @PostMapping("/api/v1/movies", produces = ["application/json"])
     fun postMovie(@RequestBody requestBody: PostMovieRequestBody): ResponseEntity<Unit> {
-        val id = createMovieHandler.handle(requestBody.toCommand()).value.toString()
-        return ResponseEntity.created(
-            ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(id)
-                .toUri()
-        ).build()
+        val id = createMovieHandler.handle(requestBody.toCommand())
+
+        if (id.isValid) {
+            return ResponseEntity.created(
+                ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(id)
+                    .toUri()
+            ).build()
+        } else {
+            return ResponseEntity.created(
+                ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(id)
+                    .toUri()
+            ).build()
+        }
     }
 
     data class PostMovieRequestBody(
@@ -43,10 +53,10 @@ class PostMovieController(
     private fun PostMovieRequestBody.toCommand(): CreateMovieCommand =
         CreateMovieCommand(
             name = this.name,
-            genreNames = this.genreIds.toSet(),
-            themeNames = this.themeIds.toSet(),
-            actorNames = this.actorIds.toSet(),
-            directorNames = this.directorIds.toSet(),
-            countryName = this.countryId
+            genreIds = this.genreIds.toSet(),
+            themeIds = this.themeIds.toSet(),
+            actorIds = this.actorIds.toSet(),
+            directorIds = this.directorIds.toSet(),
+            countryId = this.countryId
         )
 }
