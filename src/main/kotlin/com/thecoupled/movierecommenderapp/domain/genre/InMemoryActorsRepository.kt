@@ -12,8 +12,8 @@ class InMemoryGenresRepository(
     override fun query(query: GenresQuery): List<Genre> {
         val returnList: MutableList<Genre> = mutableListOf()
 
-        if (query.names != null) {
-            returnList += collection.values.filter { entity -> query.names!!.contains(entity.name) }
+        if (query.ids != null) {
+            returnList += collection.values.filter { entity -> query.ids.contains(entity.id) }
         }
 
         return returnList

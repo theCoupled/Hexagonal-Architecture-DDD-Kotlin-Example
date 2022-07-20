@@ -103,11 +103,11 @@ class PostMovieControllerTest {
     private fun createArbitraryCreateMovieCommand(): CreateMovieCommand =
         CreateMovieCommand(
             name = "some movie name",
-            genreNames = setOf("some genre"),
-            actorNames = setOf("some actor"),
-            directorNames = setOf("some director"),
-            themeNames = setOf("some theme"),
-            countryName = "some country"
+            genreIds = setOf("some genre"),
+            actorIds = setOf("some actor"),
+            directorIds = setOf("some director"),
+            themeIds = setOf("some theme"),
+            countryId = "some country"
         )
 
 }

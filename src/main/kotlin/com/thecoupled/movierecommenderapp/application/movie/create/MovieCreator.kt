@@ -50,10 +50,10 @@ class MovieCreator(
         createNewMovie(
             moviesRepository = moviesRepository,
             name = this.name,
+            genres = this.findOrFailGenres(),
+            actors = this.findActors(),
             country = this.getOrCreateCountry(),
             themes = this.getOrCreateThemes(),
-            actors = this.getOrCreateActors(),
-            genres = this.getOrCreateGenres(),
             directors = this.getOrCreateDirectors(),
             clock = clock
         )
@@ -82,26 +82,16 @@ class MovieCreator(
         return (existingThemes + createdThemes).toSet()
     }
 
-    private fun MovieCreatorData.getOrCreateActors(): Set<Actor> {
-        val existingActors = actorsRepository.query(ActorsQuery(names = this.actorNames))
-        val createdActors = this.actorNames
-            .filterNot { actorName -> existingActors.any { existingActor -> existingActor.name == actorName } }
-            .map { actorName -> Actor(id = actorsRepository.nextId(), name = actorName) }
+    private fun MovieCreatorData.findActors(): List<Actor> =
+        actorsRepository.query(ActorsQuery(ids = this.actorIds))
 
-        createdActors.forEach(actorsRepository::save)
+    private fun MovieCreatorData.findOrFailGenres(): List<Genre> {
+        val existingGenres = genresRepository.query(GenresQuery(ids = this.genreIds))
+        if (existingGenres.size != this.genreIds.size) {
+            throw Exception()
+        }
 
-        return (existingActors + createdActors).toSet()
-    }
-
-    private fun MovieCreatorData.getOrCreateGenres(): Set<Genre> {
-        val existingGenres = genresRepository.query(GenresQuery(names = this.genreNames))
-        val createdGenres = this.genreNames
-            .filterNot { genreName -> existingGenres.any { existingGenre -> existingGenre.name == genreName } }
-            .map { genreName -> Genre(id = genresRepository.nextId(), name = genreName) }
-
-        createdGenres.forEach(genresRepository::save)
-
-        return (existingGenres + createdGenres).toSet()
+        return existingGenres
     }
 
     private fun MovieCreatorData.getOrCreateDirectors(): Set<Director> {
