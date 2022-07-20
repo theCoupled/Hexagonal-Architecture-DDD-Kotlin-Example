@@ -13,8 +13,8 @@ class InMemoryDirectorsRepository(
     override fun query(query: DirectorsQuery): List<Director> {
         val returnList: MutableList<Director> = mutableListOf()
 
-        if (query.names != null) {
-            returnList += collection.values.filter { entity -> query.names!!.contains(entity.name) }
+        if (query.ids != null) {
+            returnList += collection.values.filter { entity -> query.ids.contains(entity.id) }
         }
 
         return returnList

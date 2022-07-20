@@ -14,15 +14,15 @@ class InMemoryMoviesRepository(
         var returnList: List<Movie> = collection.values.toList()
 
         if (query.andNames != null) {
-            returnList = returnList.filter { movie -> query.andNames!!.contains(movie.name) }
+            returnList = returnList.filter { movie -> query.andNames.contains(movie.name) }
         }
 
         if (query.andIds != null) {
-            returnList = returnList.filter { movie -> query.andIds!!.contains(movie.id) }
+            returnList = returnList.filter { movie -> query.andIds.contains(movie.id) }
         }
 
         if (query.andExcludeIds != null) {
-            returnList = returnList.filterNot { movie -> query.andExcludeIds!!.contains(movie.id) }
+            returnList = returnList.filterNot { movie -> query.andExcludeIds.contains(movie.id) }
         }
 
         val orFilters = query.orActorIds != null || query.orDirectorIds != null || query.orCountryIds != null || query.orThemeIds != null || query.orGenreIds != null

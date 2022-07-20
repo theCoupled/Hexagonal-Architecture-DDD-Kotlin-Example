@@ -44,8 +44,8 @@ fun createNewMovie(
     name: MovieName,
     genres: List<Genre>,
     actors: List<Actor>,
-    directors: Set<Director>,
-    themes: Set<Theme>,
+    directors: List<Director>,
+    themes: List<Theme>,
     country: Country,
     clock: Clock
 ): Movie =

@@ -52,34 +52,24 @@ class MovieCreator(
             name = this.name,
             genres = this.findOrFailGenres(),
             actors = this.findActors(),
-            country = this.getOrCreateCountry(),
-            themes = this.getOrCreateThemes(),
-            directors = this.getOrCreateDirectors(),
+            directors = this.findOrFailDirectors(),
+            themes = this.findOrFailThemes(),
+            country = this.findOrFailCountry(),
             clock = clock
         )
 
-    private fun MovieCreatorData.getOrCreateCountry(): Country {
-        val country = countriesRepository.query(CountriesQuery(names = setOf(this.countryName)))
-            .firstOrNull() ?: Country(
-            id = countriesRepository.nextId(),
-            name = this.countryName
-        )
-
-        countriesRepository.save(country)
-
-        return country
-    }
+    private fun MovieCreatorData.findOrFailCountry(): Country =
+        countriesRepository.query(CountriesQuery(ids = setOf(this.countryId)))
+            .firstOrNull() ?: throw Exception()
 
 
-    private fun MovieCreatorData.getOrCreateThemes(): Set<Theme> {
-        val existingThemes = themesRepository.query(ThemesQuery(names = this.themeNames))
-        val createdThemes = this.themeNames
-            .filterNot { themeName -> existingThemes.any { existingTheme -> existingTheme.name == themeName } }
-            .map { themeName -> Theme(id = themesRepository.nextId(), name = themeName) }
+    private fun MovieCreatorData.findOrFailThemes(): List<Theme> {
+        val existingThemes = themesRepository.query(ThemesQuery(ids = this.themeIds))
+        if (existingThemes.size != this.themeIds.size) {
+            throw Exception()
+        }
 
-        createdThemes.forEach(themesRepository::save)
-
-        return (existingThemes + createdThemes).toSet()
+        return existingThemes
     }
 
     private fun MovieCreatorData.findActors(): List<Actor> =
@@ -94,14 +84,12 @@ class MovieCreator(
         return existingGenres
     }
 
-    private fun MovieCreatorData.getOrCreateDirectors(): Set<Director> {
-        val existingDirectors = directorsRepository.query(DirectorsQuery(names = this.directorNames))
-        val createdDirectors = this.directorNames
-            .filterNot { directorName -> existingDirectors.any { existingDirector -> existingDirector.name == directorName } }
-            .map { directorName -> Director(id = directorsRepository.nextId(), name = directorName) }
+    private fun MovieCreatorData.findOrFailDirectors(): List<Director> {
+        val existingDirectors = directorsRepository.query(DirectorsQuery(ids = this.directorIds))
 
-        createdDirectors.forEach(directorsRepository::save)
-
-        return (existingDirectors + createdDirectors).toSet()
+        if (existingDirectors.size != this.directorIds.size) {
+            throw Exception()
+        }
+        return existingDirectors
     }
 }

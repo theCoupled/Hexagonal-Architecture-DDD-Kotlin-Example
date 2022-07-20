@@ -13,8 +13,8 @@ class InMemoryCountriesRepository(
     override fun query(query: CountriesQuery): List<Country> {
         val returnList: MutableList<Country> = mutableListOf()
 
-        if (query.names != null) {
-            returnList += collection.values.filter { entity -> query.names!!.contains(entity.name) }
+        if (query.ids != null) {
+            returnList += collection.values.filter { entity -> query.ids.contains(entity.id) }
         }
 
         return returnList

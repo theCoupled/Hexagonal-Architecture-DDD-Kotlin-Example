@@ -314,7 +314,7 @@ class CreateMovieHandlerTest {
     }
 
     @Test
-    fun `should create new genre when genre name not existing`() {
+    fun `should throw exception when genre not existing`() {
         val newGenreName = "arbitrary genre name"
         val newGenreId = GenreId(UUID.randomUUID())
         val genresRepo = createGenresRepository(setOf(), setOf(newGenreId))
