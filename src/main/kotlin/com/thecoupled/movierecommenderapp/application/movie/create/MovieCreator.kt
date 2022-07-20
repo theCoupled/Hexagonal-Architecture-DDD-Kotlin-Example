@@ -50,7 +50,7 @@ class MovieCreator(
         createNewMovie(
             moviesRepository = moviesRepository,
             name = this.name,
-            genres = this.getOrCreateGenres(),
+            genres = this.findOrFailGenres(),
             actors = this.findActors(),
             country = this.getOrCreateCountry(),
             themes = this.getOrCreateThemes(),
@@ -85,7 +85,7 @@ class MovieCreator(
     private fun MovieCreatorData.findActors(): List<Actor> =
         actorsRepository.query(ActorsQuery(ids = this.actorIds))
 
-    private fun MovieCreatorData.getOrCreateGenres(): List<Genre> {
+    private fun MovieCreatorData.findOrFailGenres(): List<Genre> {
         val existingGenres = genresRepository.query(GenresQuery(ids = this.genreIds))
         if (existingGenres.size != this.genreIds.size) {
             throw Exception()
