@@ -12,8 +12,9 @@ Example of a Kotlin application using Domain-Driven Design (DDD) and Command Que
     2. [Docker](#docker)
     3. [Gradle wrapper](#gradle-wrapper)
 2. [The project](#the-project)
-   1. [Project Architecture](#architecture)
-   2. [Testing strategy](#testing-strategy)
+   1. [Domain](#domain)
+   2. [Project Architecture](#architecture)
+   3. [Testing strategy](#testing-strategy)
 
 
 
